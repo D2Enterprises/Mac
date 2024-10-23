@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MacOS Inspired eCommerce with Dark Mode Toggle</title>
+    <style>
+        /* Base and reset styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+        }
+
+        body {
+            transition: background-color 0.5s ease, color 0.5s ease;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            overflow-x: hidden;
+        }
+
+        :root {
+            --bg-color: #f5f5f7;
+            --text-color: #1d1d1f;
+            --card-bg-color: #ffffff;
+            --border-color: #d2d2d7;
+            --link-color: #0071e3;
+            --button-bg-color: #0071e3;
+            --button-hover-bg: #005bb5;
+            --footer-bg: #f8f8f9;
+            --cart-bg-color: #ffffff;
+            --shadow-color: rgba(0, 0, 0, 0.2);
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #1d1d1f;
+            --text-color: #f5f5f7;
+            --card-bg-color: #333;
+            --border-color: #444;
+            --link-color: #4c8bf5;
+            --button-bg-color: #4c8bf5;
+            --button-hover-bg: #1a4bb8;
+            --footer-bg: #2a2a2e;
+            --cart-bg-color: #444;
+            --shadow-color: rgba(0, 0, 0, 0.4);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideUp {
+            0% {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            background-color: var(--footer-bg);
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 2px 10px var(--shadow-color);
+            transition: background-color 0.3s, box-shadow 0.3s;
+        }
+
+        .logo {
+            font-size: 26px;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+
+        .nav-links li {
+            margin-left: 20px;
+            font-size: 18px;
+            position: relative;
+        }
+
+        .nav-links li a {
+            text-decoration: none;
+            color: var(--text-color);
+            transition: color 0.2s ease;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        .nav-links li a:hover {
+            color: var(--link-color);
+            background-color: rgba(0, 113, 227, 0.1);
+            border-radius: 5px;
+        }
+
+        /* Dark/Light Mode Toggle Slider */
+        .mode-toggle {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            background-color: var(--border-color);
+            border-radius: 30px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            display: flex;
+            align-items: center;
+            padding: 5px;
+        }
+
+        .slider {
+            width: 24px;
+            height: 24px;
+            background-color: white;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px var(--shadow-color);
+        }
+
+        .active {
+            transform: translateX(30px);
+            background-color: var(--button-bg-color);
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 80px 20px;
+            background: linear-gradient(to bottom right, var(--card-bg-color), var(--bg-color));
+            animation: fadeIn 1s ease;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px var(--shadow-color);
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            animation: slideUp 0.5s ease forwards;
+        }
+
+        .hero p {
+            font-size: 20px;
+            margin-bottom: 30px;
+            animation: slideUp 0.7s ease forwards;
+        }
+
+        .cta-btn {
+            padding: 15px 30px;
+            background-color: var(--button-bg-color);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s;
+            box-shadow: 0 4px 10px var(--shadow-color);
+        }
+
+        .cta-btn:active {
+            transform: scale(0.95);
+        }
+
+        .cta-btn:hover {
+            background-color: var(--button-hover-bg);
+            box-shadow: 0 6px 12px var(--shadow-color);
+        }
+
+        /* Product Grid */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            padding: 50px 40px;
+            animation: fadeIn 1s ease forwards;
+        }
+
+        .product-card {
+            background-color: var(--card-bg-color);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 12px var(--shadow-color);
+            text-align: center;
+            transition: background-color 0.5s, box-shadow 0.3s, transform 0.3s;
+            animation: slideUp 0.8s ease forwards;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .product-card img {
+            max-width: 100%;
+            border-radius: 10px;
+            transition: transform 0.3s;
+        }
+
+        .product-card:hover img {
+            transform: scale(1.05);
+        }
+
+        .product-card h3 {
+            font-size: 24px;
+            margin: 15px 0;
+            color: var(--text-color);
+        }
+
+        .product-card p {
+            color: #6e6e73;
+            margin-bottom: 15px;
+        }
+
+        .product-card .price {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .product-card .buy-btn {
+            padding: 10px 20px;
+            background-color: var(--button-bg-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s;
+            box-shadow: 0 2px 5px var(--shadow-color);
+        }
+
+        .product-card .buy-btn:hover {
+            background-color: var(--button-hover-bg);
+            box-shadow: 0 4px 10px var(--shadow-color);
+        }
+
+        .product-card .buy-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Cart */
+        .cart {
+            background-color: var(--cart-bg-color);
+            border-radius: 10px;
+            padding: 20px;
+            position: fixed;
+            top: 20%;
+            right: -300px;
+            width: 300px;
+            box-shadow: 0 4px 20px var(--shadow-color);
+            transition: right 0.5s ease;
+            z-index: 100;
+        }
+
+        .cart.open {
+            right: 0;
+        }
+
+        .cart h2 {
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+
+        .cart-items {
+            list-style: none;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        .cart-item p {
+            margin: 0;
+            font-size: 16px;
+        }
+
+        .cart-item .remove-btn {
+            color: red;
+            cursor: pointer;
+        }
+
+        .cart-footer {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .checkout-btn {
+            padding: 10px 20px;
+            background-color: var(--button-bg-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s;
+            box-shadow: 0 2px 5px var(--shadow-color);
+        }
+
+        .checkout-btn:hover {
+            background-color: var(--button-hover-bg);
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: var(--footer-bg);
+            border-top: 1px solid var(--border-color);
+        }
+
+        footer p {
+            font-size: 14px;
+            color: #6e6e73;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="logo">MyShop</div>
+        <nav>
+            <ul class="nav-links">
+                <li><a href="#">Home</a></li>
+                <li><a href="#">Products</a></li>
+                <li><a href="#">About</a></li>
+                <li><a href="#">Contact</a></li>
+            </ul>
+        </nav>
+        <div class="mode-toggle" onclick="toggleMode()">
+            <div class="slider"></div>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <h1>Welcome to MyShop!</h1>
+            <p>Your one-stop shop for everything awesome!</p>
+            <button class="cta-btn">Shop Now</button>
+        </section>
+
+        <section class="product-grid">
+            <div class="product-card">
+                <img src="https://via.placeholder.com/250" alt="Product 1">
+                <h3>Product 1</h3>
+                <p>Short description of Product 1.</p>
+                <p class="price">$19.99</p>
+                <button class="buy-btn" onclick="addToCart('Product 1', 19.99)">Add to Cart</button>
+            </div>
+            <div class="product-card">
+                <img src="https://via.placeholder.com/250" alt="Product 2">
+                <h3>Product 2</h3>
+                <p>Short description of Product 2.</p>
+                <p class="price">$29.99</p>
+                <button class="buy-btn" onclick="addToCart('Product 2', 29.99)">Add to Cart</button>
+            </div>
+            <div class="product-card">
+                <img src="https://via.placeholder.com/250" alt="Product 3">
+                <h3>Product 3</h3>
+                <p>Short description of Product 3.</p>
+                <p class="price">$39.99</p>
+                <button class="buy-btn" onclick="addToCart('Product 3', 39.99)">Add to Cart</button>
+            </div>
+            <!-- Add more products as needed -->
+        </section>
+    </main>
+
+    <div class="cart" id="cart">
+        <h2>Your Cart</h2>
+        <ul class="cart-items" id="cart-items"></ul>
+        <div class="cart-footer">
+            <span>Total: <span id="cart-total">$0.00</span></span>
+            <button class="checkout-btn" onclick="checkout()">Checkout</button>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 MyShop. All rights reserved.</p>
+    </footer>
+
+    <script>
+        let cart = [];
+        const cartElement = document.getElementById("cart");
+        const cartItemsElement = document.getElementById("cart-items");
+        const cartTotalElement = document.getElementById("cart-total");
+
+        function toggleMode() {
+            document.body.classList.toggle("dark-mode");
+            const modeToggle = document.querySelector(".mode-toggle .slider");
+            modeToggle.classList.toggle("active");
+            document.body.dataset.theme = document.body.dataset.theme === "dark" ? "" : "dark";
+        }
+
+        function addToCart(product, price) {
+            cart.push({ product, price });
+            updateCart();
+            cartElement.classList.add("open");
+        }
+
+        function updateCart() {
+            cartItemsElement.innerHTML = "";
+            let total = 0;
+            cart.forEach(item => {
+                const li = document.createElement("li");
+                li.className = "cart-item";
+                li.innerHTML = `
+                    <p>${item.product} - $${item.price.toFixed(2)} <span class="remove-btn" onclick="removeFromCart('${item.product}')">Remove</span></p>
+                `;
+                cartItemsElement.appendChild(li);
+                total += item.price;
+            });
+            cartTotalElement.innerText = `$${total.toFixed(2)}`;
+        }
+
+        function removeFromCart(product) {
+            cart = cart.filter(item => item.product !== product);
+            updateCart();
+            if (cart.length === 0) {
+                cartElement.classList.remove("open");
+            }
+        }
+
+        function checkout() {
+            alert("Proceeding to checkout...");
+        }
+    </script>
+</body>
+
+</html>
